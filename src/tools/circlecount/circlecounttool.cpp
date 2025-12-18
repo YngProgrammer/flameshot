@@ -21,9 +21,7 @@ CircleCountTool::CircleCountTool(QObject* parent)
 
 CircleCountTool::~CircleCountTool()
 {
-    if (!m_confW.isNull()) {
-        delete m_confW;
-    }
+    // QPointer automatically handles cleanup, no manual deletion needed
 }
 
 QIcon CircleCountTool::icon(const QColor& background, bool inEditor) const
@@ -210,6 +208,7 @@ void CircleCountTool::drawStart(const CaptureContext& context)
     m_valid = true;
     
     // If custom count is enabled, use it instead of auto-increment
+    // When disabled, count will be set by CaptureWidget's auto-increment logic
     if (m_useCustomCount) {
         setCount(m_customCount);
     }
