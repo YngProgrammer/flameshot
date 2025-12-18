@@ -120,7 +120,7 @@ SidePanelWidget::SidePanelWidget(QPixmap* p, QWidget* parent)
             this,
             &SidePanelWidget::onToolSizeChanged);
     connect(m_circleCountSpin,
-            qOverload<int>(&QSpinBox::valueChanged),
+            QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &SidePanelWidget::emitCircleCountChanged);
     // color hex editor sigslots

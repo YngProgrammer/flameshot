@@ -1073,7 +1073,12 @@ void CaptureWidget::setToolSize(int size)
 
 void CaptureWidget::updateCircleCount(int count)
 {
-    int nextCount = qBound(minCircleCount, count, maxCircleCount);
+    int nextCount = count;
+    if (count < minCircleCount) {
+        nextCount = minCircleCount;
+    } else if (count > maxCircleCount) {
+        nextCount = maxCircleCount;
+    }
     if (m_context.circleCount == nextCount) {
         return;
     }
@@ -1087,7 +1092,10 @@ void CaptureWidget::assignCircleCountAndIncrement(CaptureTool* tool)
         return;
     }
     tool->setCount(m_context.circleCount);
-    updateCircleCount(qMin(m_context.circleCount + 1, maxCircleCount));
+    const int nextCount = m_context.circleCount < maxCircleCount
+                            ? m_context.circleCount + 1
+                            : maxCircleCount;
+    updateCircleCount(nextCount);
 }
 
 void CaptureWidget::keyPressEvent(QKeyEvent* e)
