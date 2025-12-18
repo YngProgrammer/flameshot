@@ -18,6 +18,8 @@ class QCheckBox;
 
 constexpr int maxToolSize = 50;
 constexpr int minSliderWidth = 100;
+constexpr int minCircleCount = 1;
+constexpr int maxCircleCount = 9999;
 
 class SidePanelWidget : public QWidget
 {
@@ -36,16 +38,19 @@ signals:
     void hidePanel();
     void displayGridChanged(bool display);
     void gridSizeChanged(int size);
+    void circleCountChanged(int count);
 
 public slots:
     void onToolSizeChanged(int tool);
     void onColorChanged(const QColor& color);
     void startColorGrab();
+    void onCircleCountChanged(int count);
 
 private slots:
     void onColorGrabFinished();
     void onColorGrabAborted();
     void onTemporaryColorUpdated(const QColor& color);
+    void emitCircleCountChanged(int count);
 
 private:
     void finalizeGrab();
@@ -68,4 +73,5 @@ private:
     int m_toolSize{};
     QCheckBox* m_gridCheck{ nullptr };
     QSpinBox* m_gridSizeSpin{ nullptr };
+    QSpinBox* m_circleCountSpin{ nullptr };
 };
