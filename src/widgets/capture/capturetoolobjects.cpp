@@ -48,9 +48,24 @@ QList<QPointer<CaptureTool>> CaptureToolObjects::captureToolObjects()
     return m_captureToolObjects;
 }
 
+QList<QPointer<CaptureTool>> CaptureToolObjects::captureToolObjects() const
+{
+    return m_captureToolObjects;
+}
+
 int CaptureToolObjects::size()
 {
     return m_captureToolObjects.size();
+}
+
+int CaptureToolObjects::size() const
+{
+    return m_captureToolObjects.size();
+}
+
+bool CaptureToolObjects::isEmpty() const
+{
+    return m_captureToolObjects.isEmpty();
 }
 
 void CaptureToolObjects::removeAt(int index)

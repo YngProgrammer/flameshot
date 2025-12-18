@@ -76,6 +76,7 @@ private slots:
     void childLeave();
 
     void deleteCurrentTool();
+    void clearAllObjects();
 
     void setState(CaptureToolButton* b);
     void handleToolSignal(CaptureTool::Request r);

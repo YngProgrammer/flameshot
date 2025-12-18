@@ -305,6 +305,10 @@ CaptureWidget::~CaptureWidget()
     if (m_captureDone) {
         auto lastRegion = m_selection->geometry();
         setLastRegion(lastRegion);
+        // Save tool objects if the option is enabled
+        if (m_config.saveLastObjects()) {
+            setLastToolObjects(m_captureToolObjects);
+        }
         QRect geometry(m_context.selection);
         geometry.setTopLeft(geometry.topLeft() + m_context.widgetOffset);
         Flameshot::instance()->exportCapture(
@@ -1289,6 +1293,15 @@ void CaptureWidget::initPanel()
     emit toolSizeChanged(m_context.toolSize);
     m_panel->pushWidget(m_sidePanel);
 
+    // Load saved tool objects if the option is enabled
+    if (m_config.saveLastObjects()) {
+        getLastToolObjects(m_captureToolObjects);
+        if (!m_captureToolObjects.isEmpty()) {
+            drawToolsData();
+            restoreCircleCountState();
+        }
+    }
+
     // Fill undo/redo/history list widget
     m_panel->fillCaptureTools(m_captureToolObjects.captureToolObjects());
 }
@@ -1703,6 +1716,11 @@ void CaptureWidget::initShortcuts()
                 this,
                 SLOT(selectAll()));
 
+    newShortcut(
+      QKeySequence(ConfigHandler().shortcut("TYPE_CLEAR_ALL_OBJECTS")),
+      this,
+      SLOT(clearAllObjects()));
+
     newShortcut(Qt::Key_Escape, this, SLOT(deleteToolWidgetOrClose()));
 }
 
@@ -1714,6 +1732,31 @@ void CaptureWidget::deleteCurrentTool()
     if (oldToolSize != m_context.toolSize) {
         emit toolSizeChanged(m_context.toolSize);
     }
+}
+
+void CaptureWidget::clearAllObjects()
+{
+    if (m_captureToolObjects.isEmpty()) {
+        return;
+    }
+
+    // Save current state for undo
+    m_captureToolObjectsBackup = m_captureToolObjects;
+
+    // Clear all objects
+    m_captureToolObjects.clear();
+    pushObjectsStateToUndoStack();
+
+    // Reset circle counter
+    m_context.circleCount = 1;
+
+    // Reset active layer selection
+    m_panel->setActiveLayer(-1);
+
+    // Redraw
+    drawToolsData();
+    updateLayersPanel();
+    update();
 }
 
 void CaptureWidget::updateSizeIndicator()

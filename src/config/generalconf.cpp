@@ -47,6 +47,7 @@ GeneralConf::GeneralConf(QWidget* parent)
     initShowQuitPrompt();
     initAllowMultipleGuiInstances();
     initSaveLastRegion();
+    initSaveLastObjects();
     initShowHelp();
     initShowSidePanelButton();
     initUseJpgForClipboard();
@@ -105,6 +106,7 @@ void GeneralConf::_updateComponents(bool allowEmptySavePath)
     m_showMagnifier->setChecked(config.showMagnifier());
     m_squareMagnifier->setChecked(config.squareMagnifier());
     m_saveLastRegion->setChecked(config.saveLastRegion());
+    m_saveLastObjects->setChecked(config.saveLastObjects());
     m_reverseArrow->setChecked(config.reverseArrow());
 
 #if !defined(Q_OS_WIN)
@@ -138,6 +140,11 @@ void GeneralConf::updateComponents()
 void GeneralConf::saveLastRegion(bool checked)
 {
     ConfigHandler().setSaveLastRegion(checked);
+}
+
+void GeneralConf::saveLastObjects(bool checked)
+{
+    ConfigHandler().setSaveLastObjects(checked);
 }
 
 void GeneralConf::showHelpChanged(bool checked)
@@ -291,6 +298,21 @@ void GeneralConf::initSaveLastRegion()
             &QCheckBox::clicked,
             this,
             &GeneralConf::saveLastRegion);
+}
+
+void GeneralConf::initSaveLastObjects()
+{
+    m_saveLastObjects =
+      new QCheckBox(tr("Restore drawing objects from previous screenshot"), this);
+    m_saveLastObjects->setToolTip(
+      tr("Restore the drawing objects (arrows, rectangles, etc.) from the last "
+         "screenshot in GUI mode. Use Ctrl+Shift+C to clear all objects quickly."));
+    m_scrollAreaLayout->addWidget(m_saveLastObjects);
+
+    connect(m_saveLastObjects,
+            &QCheckBox::clicked,
+            this,
+            &GeneralConf::saveLastObjects);
 }
 
 void GeneralConf::initShowSidePanelButton()
