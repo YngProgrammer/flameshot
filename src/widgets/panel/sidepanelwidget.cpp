@@ -122,7 +122,7 @@ SidePanelWidget::SidePanelWidget(QPixmap* p, QWidget* parent)
     connect(m_circleCountSpin,
             qOverload<int>(&QSpinBox::valueChanged),
             this,
-            &SidePanelWidget::circleCountChanged);
+            &SidePanelWidget::emitCircleCountChanged);
     // color hex editor sigslots
     connect(m_colorHex, &QLineEdit::editingFinished, this, [=, this]() {
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
@@ -175,6 +175,11 @@ void SidePanelWidget::onCircleCountChanged(int count)
 {
     QSignalBlocker blocker(m_circleCountSpin);
     m_circleCountSpin->setValue(count);
+}
+
+void SidePanelWidget::emitCircleCountChanged(int count)
+{
+    emit circleCountChanged(count);
 }
 
 void SidePanelWidget::startColorGrab()

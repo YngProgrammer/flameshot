@@ -50,6 +50,7 @@ private slots:
     void onColorGrabFinished();
     void onColorGrabAborted();
     void onTemporaryColorUpdated(const QColor& color);
+    void emitCircleCountChanged(int count);
 
 private:
     void finalizeGrab();

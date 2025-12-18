@@ -1087,7 +1087,11 @@ void CaptureWidget::assignCircleCountAndIncrement(CaptureTool* tool)
         return;
     }
     tool->setCount(m_context.circleCount);
-    updateCircleCount(m_context.circleCount + 1);
+    if (m_context.circleCount < maxCircleCount) {
+        updateCircleCount(m_context.circleCount + 1);
+    } else {
+        updateCircleCount(m_context.circleCount);
+    }
 }
 
 void CaptureWidget::keyPressEvent(QKeyEvent* e)
