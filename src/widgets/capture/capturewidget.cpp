@@ -79,7 +79,7 @@ CaptureWidget::CaptureWidget(const CaptureRequest& req,
 
 {
     m_undoStack.setUndoLimit(ConfigHandler().undoLimit());
-    m_context.circleCount = 1;
+    m_context.circleCount = minCircleCount;
 
     // Base config of the widget
     m_eventFilter = new HoverEventFilter(this);
@@ -819,8 +819,7 @@ bool CaptureWidget::startDrawObjectTool(const QPoint& pos)
         // TODO this is the wrong place to do this
 
         if (m_activeTool->type() == CaptureTool::TYPE_CIRCLECOUNT) {
-            m_activeTool->setCount(m_context.circleCount);
-            updateCircleCount(m_context.circleCount + 1);
+            assignCircleCountAndIncrement(m_activeTool);
         }
 
         return true;
@@ -1074,12 +1073,21 @@ void CaptureWidget::setToolSize(int size)
 
 void CaptureWidget::updateCircleCount(int count)
 {
-    int nextCount = count < 1 ? 1 : count;
+    int nextCount = qBound(minCircleCount, count, maxCircleCount);
     if (m_context.circleCount == nextCount) {
         return;
     }
     m_context.circleCount = nextCount;
     emit circleCountChanged(m_context.circleCount);
+}
+
+void CaptureWidget::assignCircleCountAndIncrement(CaptureTool* tool)
+{
+    if (!tool) {
+        return;
+    }
+    tool->setCount(m_context.circleCount);
+    updateCircleCount(m_context.circleCount + 1);
 }
 
 void CaptureWidget::keyPressEvent(QKeyEvent* e)

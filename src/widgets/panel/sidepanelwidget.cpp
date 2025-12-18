@@ -53,9 +53,9 @@ SidePanelWidget::SidePanelWidget(QPixmap* p, QWidget* parent)
     auto* circleCountHBox = new QHBoxLayout();
     auto* circleCountLabel = new QLabel(tr("Circle Counter: "));
     m_circleCountSpin = new QSpinBox(this);
-    m_circleCountSpin->setRange(1, 9999);
+    m_circleCountSpin->setRange(minCircleCount, maxCircleCount);
     m_circleCountSpin->setSingleStep(1);
-    m_circleCountSpin->setValue(1);
+    m_circleCountSpin->setValue(minCircleCount);
     m_circleCountSpin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     circleCountHBox->addWidget(circleCountLabel);

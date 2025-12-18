@@ -18,6 +18,8 @@ class QCheckBox;
 
 constexpr int maxToolSize = 50;
 constexpr int minSliderWidth = 100;
+constexpr int minCircleCount = 1;
+constexpr int maxCircleCount = 9999;
 
 class SidePanelWidget : public QWidget
 {

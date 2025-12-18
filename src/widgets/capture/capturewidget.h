@@ -145,6 +145,7 @@ private:
 
     void setToolSize(int size);
     void updateCircleCount(int count);
+    void assignCircleCountAndIncrement(CaptureTool* tool);
 
     QRect extendedSelection() const;
     QRect extendedRect(const QRect& r) const;
