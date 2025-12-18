@@ -13,7 +13,7 @@ class CircleCountTool : public AbstractTwoPointTool
     Q_OBJECT
 public:
     explicit CircleCountTool(QObject* parent = nullptr);
-    // Destructor - QPointer handles widget cleanup automatically
+    // Defaulted destructor - member QPointer is automatically destroyed
     ~CircleCountTool() override;
 
     QIcon icon(const QColor& background, bool inEditor) const override;
