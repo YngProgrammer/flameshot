@@ -138,6 +138,7 @@ static QMap<class QString, QSharedPointer<ValueHandler>>
     OPTION("jpegQuality"                 , BoundedInt        ( 0,100,75      )),
     OPTION("reverseArrow"                ,Bool               ( false         )),
     OPTION("insecurePixelate"            ,Bool               ( false         )),
+    OPTION("saveLastObjects"             ,Bool               ( false         )),
 };
 
 static QMap<QString, QSharedPointer<KeySequence>> recognizedShortcuts = {
@@ -193,6 +194,7 @@ static QMap<QString, QSharedPointer<KeySequence>> recognizedShortcuts = {
     SHORTCUT("TYPE_SIZEINCREASE"        ,                           ),
     SHORTCUT("TYPE_SIZEDECREASE"        ,                           ),
     SHORTCUT("TYPE_CIRCLECOUNT"         ,                           ),
+    SHORTCUT("TYPE_CLEAR_ALL_OBJECTS"   ,   "Ctrl+Shift+C"          ),
 };
 // clang-format on
 
