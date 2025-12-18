@@ -1,7 +1,12 @@
 target_sources(flameshot PRIVATE arrow/arrowtool.h arrow/arrowtool.cpp)
 target_sources(flameshot PRIVATE pixelate/pixelatetool.h pixelate/pixelatetool.cpp)
 target_sources(flameshot PRIVATE circle/circletool.h circle/circletool.cpp)
-target_sources(flameshot PRIVATE circlecount/circlecounttool.h circlecount/circlecounttool.cpp)
+target_sources(
+  flameshot
+  PRIVATE circlecount/circlecountconfig.h
+          circlecount/circlecounttool.h
+          circlecount/circlecountconfig.cpp
+          circlecount/circlecounttool.cpp)
 target_sources(flameshot PRIVATE copy/copytool.h copy/copytool.cpp)
 target_sources(flameshot PRIVATE exit/exittool.h exit/exittool.cpp)
 target_sources(flameshot PRIVATE sizeincrease/sizeincreasetool.h sizeincrease/sizeincreasetool.cpp)

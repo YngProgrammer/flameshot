@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2017-2019 Alejandro Sirgo Rica & Contributors
 
 #include "circlecounttool.h"
+#include "circlecountconfig.h"
 #include "colorutils.h"
 #include <QPainter>
 #include <QPainterPath>
@@ -14,7 +15,11 @@ namespace {
 CircleCountTool::CircleCountTool(QObject* parent)
   : AbstractTwoPointTool(parent)
   , m_valid(false)
+  , m_useCustomCount(false)
+  , m_customCount(1)
 {}
+
+CircleCountTool::~CircleCountTool() = default;
 
 QIcon CircleCountTool::icon(const QColor& background, bool inEditor) const
 {
@@ -79,6 +84,8 @@ void CircleCountTool::copyParams(const CircleCountTool* from,
     AbstractTwoPointTool::copyParams(from, to);
     to->setCount(from->count());
     to->m_valid = from->m_valid;
+    to->m_useCustomCount = from->m_useCustomCount;
+    to->m_customCount = from->m_customCount;
 }
 
 QString CircleCountTool::description() const
@@ -196,9 +203,44 @@ void CircleCountTool::drawStart(const CaptureContext& context)
 {
     AbstractTwoPointTool::drawStart(context);
     m_valid = true;
+    
+    // If custom count is enabled, use it instead of auto-increment
+    // When disabled, count will be set by CaptureWidget's auto-increment logic
+    if (m_useCustomCount) {
+        setCount(m_customCount);
+    }
 }
 
 void CircleCountTool::pressed(CaptureContext& context)
 {
     Q_UNUSED(context)
+}
+
+QWidget* CircleCountTool::configurationWidget()
+{
+    if (m_confW == nullptr) {
+        m_confW = new CircleCountConfig();
+        m_confW->setCustomCount(m_customCount);
+        m_confW->setUseCustomCount(m_useCustomCount);
+        
+        connect(m_confW,
+                &CircleCountConfig::customCountChanged,
+                this,
+                &CircleCountTool::updateCustomCount);
+        connect(m_confW,
+                &CircleCountConfig::useCustomCountChanged,
+                this,
+                &CircleCountTool::updateUseCustomCount);
+    }
+    return m_confW;
+}
+
+void CircleCountTool::updateCustomCount(int count)
+{
+    m_customCount = count;
+}
+
+void CircleCountTool::updateUseCustomCount(bool useCustom)
+{
+    m_useCustomCount = useCustom;
 }

@@ -41,6 +41,10 @@
 #include "src/widgets/updatenotificationwidget.h"
 #endif
 
+// Include CircleCountTool for custom count checking
+// This is needed for dynamic_cast to check useCustomCount() in the drawing logic
+#include "src/tools/circlecount/circlecounttool.h"
+
 #define MOUSE_DISTANCE_TO_START_MOVING 3
 
 // CaptureWidget is the main component used to capture the screen. It contains
@@ -819,7 +823,11 @@ bool CaptureWidget::startDrawObjectTool(const QPoint& pos)
         // TODO this is the wrong place to do this
 
         if (m_activeTool->type() == CaptureTool::TYPE_CIRCLECOUNT) {
-            m_activeTool->setCount(m_context.circleCount++);
+            // Only auto-increment if not using custom count
+            auto* circleTool = dynamic_cast<CircleCountTool*>(m_activeTool);
+            if (circleTool && !circleTool->useCustomCount()) {
+                m_activeTool->setCount(m_context.circleCount++);
+            }
         }
 
         return true;
