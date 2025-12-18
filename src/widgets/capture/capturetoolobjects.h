@@ -13,11 +13,13 @@ class CaptureToolObjects : public QObject
 public:
     explicit CaptureToolObjects(QObject* parent = nullptr);
     QList<QPointer<CaptureTool>> captureToolObjects();
+    QList<QPointer<CaptureTool>> captureToolObjects() const;
     void append(const QPointer<CaptureTool>& captureTool);
     void insert(int index, const QPointer<CaptureTool>& captureTool);
     void removeAt(int index);
     void clear();
     int size();
+    int size() const;
     int find(const QPoint& pos, QSize captureSize);
     QPointer<CaptureTool> at(int index);
     CaptureToolObjects& operator=(const CaptureToolObjects& other);

@@ -2,23 +2,17 @@
 // SPDX-FileCopyrightText: 2021 Jeremy Borgman
 
 #include "cacheutils.h"
-#include "src/tools/abstractpathtool.h"
 #include "src/tools/abstracttwopointtool.h"
 #include "src/tools/arrow/arrowtool.h"
 #include "src/tools/capturecontext.h"
 #include "src/tools/circle/circletool.h"
 #include "src/tools/circlecount/circlecounttool.h"
-#include "src/tools/line/linetool.h"
-#include "src/tools/marker/markertool.h"
-#include "src/tools/pencil/penciltool.h"
 #include "src/tools/pixelate/pixelatetool.h"
 #include "src/tools/rectangle/rectangletool.h"
-#include "src/tools/text/texttool.h"
 #include "src/widgets/capture/capturetoolobjects.h"
 #include <QDataStream>
 #include <QDir>
 #include <QFile>
-#include <QFont>
 #include <QRect>
 #include <QStandardPaths>
 #include <QString>
@@ -100,42 +94,40 @@ void setLastToolObjects(const CaptureToolObjects& objects)
     // Write version
     out << TOOL_CACHE_VERSION;
 
-    // Get the tool objects (need to cast away const for the getter)
-    auto& mutableObjects = const_cast<CaptureToolObjects&>(objects);
-    auto toolList = mutableObjects.captureToolObjects();
+    // Get the tool objects using const method
+    auto toolList = objects.captureToolObjects();
 
-    // Write count
-    out << static_cast<qint32>(toolList.size());
+    // Count only the supported tool types (two-point tools and circle count)
+    qint32 supportedCount = 0;
+    for (const auto& tool : toolList) {
+        if (tool.isNull()) {
+            continue;
+        }
+        switch (tool->type()) {
+            case CaptureTool::TYPE_ARROW:
+            case CaptureTool::TYPE_RECTANGLE:
+            case CaptureTool::TYPE_CIRCLE:
+            case CaptureTool::TYPE_PIXELATE:
+            case CaptureTool::TYPE_CIRCLECOUNT:
+                supportedCount++;
+                break;
+            default:
+                // Skip unsupported tool types (path tools, text, etc.)
+                break;
+        }
+    }
 
-    // Write each tool
+    // Write count of supported tools only
+    out << supportedCount;
+
+    // Write each supported tool
     for (const auto& tool : toolList) {
         if (tool.isNull()) {
             continue;
         }
 
-        // Write tool type
-        out << static_cast<qint32>(tool->type());
-
+        // Write tool type and data only for supported types
         switch (tool->type()) {
-            case CaptureTool::TYPE_PENCIL:
-            case CaptureTool::TYPE_DRAWER:
-            case CaptureTool::TYPE_MARKER: {
-                auto* pathTool = dynamic_cast<AbstractPathTool*>(tool.data());
-                if (pathTool) {
-                    // We need to access the points, but they're protected
-                    // Use a workaround: serialize bounding rect, color, size
-                    // and the tool's process output
-                    out << pathTool->boundingRect();
-                    // Access via the virtual methods we have
-                    const QPoint* posPtr = pathTool->pos();
-                    out << (posPtr ? *posPtr : QPoint());
-                    out << pathTool->size();
-                    // We don't have direct access to color and points
-                    // This is a limitation - for path tools, we'd need to
-                    // modify the class to expose serialization
-                }
-                break;
-            }
             case CaptureTool::TYPE_ARROW:
             case CaptureTool::TYPE_RECTANGLE:
             case CaptureTool::TYPE_CIRCLE:
@@ -143,6 +135,7 @@ void setLastToolObjects(const CaptureToolObjects& objects)
                 auto* twoPointTool =
                   dynamic_cast<AbstractTwoPointTool*>(tool.data());
                 if (twoPointTool) {
+                    out << static_cast<qint32>(tool->type());
                     writeTwoPointToolData(out, twoPointTool);
                 }
                 break;
@@ -151,25 +144,15 @@ void setLastToolObjects(const CaptureToolObjects& objects)
                 auto* circleCountTool =
                   dynamic_cast<CircleCountTool*>(tool.data());
                 if (circleCountTool) {
+                    out << static_cast<qint32>(tool->type());
                     writeTwoPointToolData(out, circleCountTool);
                     out << static_cast<qint32>(circleCountTool->count());
                 }
                 break;
             }
-            case CaptureTool::TYPE_TEXT: {
-                auto* textTool = dynamic_cast<TextTool*>(tool.data());
-                if (textTool) {
-                    out << textTool->boundingRect();
-                    const QPoint* posPtr = textTool->pos();
-                    out << (posPtr ? *posPtr : QPoint());
-                    out << textTool->size();
-                    // Note: text content and font aren't easily accessible
-                    // without modifying the class
-                }
-                break;
-            }
             default:
-                // Skip unsupported tool types
+                // Skip unsupported tool types (path tools, text, etc.)
+                // These would require class modifications to properly serialize
                 break;
         }
     }
@@ -180,6 +163,11 @@ void setLastToolObjects(const CaptureToolObjects& objects)
 void getLastToolObjects(CaptureToolObjects& objects)
 {
     auto cachePath = getCachePath() + "/toolobjects.bin";
+
+    // Check if the cache file exists before trying to open it
+    if (!QFile::exists(cachePath)) {
+        return;
+    }
 
     QFile file(cachePath);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -208,17 +196,6 @@ void getLastToolObjects(CaptureToolObjects& objects)
         auto toolType = static_cast<CaptureTool::Type>(toolTypeInt);
 
         switch (toolType) {
-            case CaptureTool::TYPE_PENCIL:
-            case CaptureTool::TYPE_DRAWER:
-            case CaptureTool::TYPE_MARKER: {
-                // Path tools require more complex deserialization
-                // Skip for now - would need class modifications
-                QRect bounds;
-                QPoint pos;
-                int size;
-                in >> bounds >> pos >> size;
-                break;
-            }
             case CaptureTool::TYPE_ARROW:
             case CaptureTool::TYPE_RECTANGLE:
             case CaptureTool::TYPE_CIRCLE:
@@ -248,7 +225,7 @@ void getLastToolObjects(CaptureToolObjects& objects)
                 }
 
                 if (tool) {
-                    // Initialize the tool with a fake context
+                    // Initialize the tool with a context
                     CaptureContext ctx;
                     ctx.color = color;
                     ctx.toolSize = thickness;
@@ -278,15 +255,6 @@ void getLastToolObjects(CaptureToolObjects& objects)
                 tool->drawEnd(p2);
                 tool->setCount(countValue);
                 objects.append(tool);
-                break;
-            }
-            case CaptureTool::TYPE_TEXT: {
-                // Text tool requires more complex deserialization
-                QRect bounds;
-                QPoint pos;
-                int size;
-                in >> bounds >> pos >> size;
-                // Skip text tools for now - would need class modifications
                 break;
             }
             default:
