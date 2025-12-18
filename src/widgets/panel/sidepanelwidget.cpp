@@ -173,9 +173,8 @@ void SidePanelWidget::onToolSizeChanged(int t)
 
 void SidePanelWidget::onCircleCountChanged(int count)
 {
-    int nextCount = count < 1 ? 1 : count;
     QSignalBlocker blocker(m_circleCountSpin);
-    m_circleCountSpin->setValue(nextCount);
+    m_circleCountSpin->setValue(count);
 }
 
 void SidePanelWidget::startColorGrab()

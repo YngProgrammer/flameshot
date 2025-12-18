@@ -1075,9 +1075,10 @@ void CaptureWidget::setToolSize(int size)
 void CaptureWidget::updateCircleCount(int count)
 {
     int nextCount = count < 1 ? 1 : count;
-    if (m_context.circleCount != nextCount) {
-        m_context.circleCount = nextCount;
+    if (m_context.circleCount == nextCount) {
+        return;
     }
+    m_context.circleCount = nextCount;
     emit circleCountChanged(m_context.circleCount);
 }
 
