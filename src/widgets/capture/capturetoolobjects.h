@@ -20,6 +20,7 @@ public:
     void clear();
     int size();
     int size() const;
+    bool isEmpty() const;
     int find(const QPoint& pos, QSize captureSize);
     QPointer<CaptureTool> at(int index);
     CaptureToolObjects& operator=(const CaptureToolObjects& other);

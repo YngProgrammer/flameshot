@@ -63,6 +63,11 @@ int CaptureToolObjects::size() const
     return m_captureToolObjects.size();
 }
 
+bool CaptureToolObjects::isEmpty() const
+{
+    return m_captureToolObjects.isEmpty();
+}
+
 void CaptureToolObjects::removeAt(int index)
 {
     if (index >= 0 && index < m_captureToolObjects.size()) {

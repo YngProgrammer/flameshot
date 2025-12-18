@@ -1296,7 +1296,7 @@ void CaptureWidget::initPanel()
     // Load saved tool objects if the option is enabled
     if (m_config.saveLastObjects()) {
         getLastToolObjects(m_captureToolObjects);
-        if (m_captureToolObjects.size() > 0) {
+        if (!m_captureToolObjects.isEmpty()) {
             drawToolsData();
             restoreCircleCountState();
         }
@@ -1736,7 +1736,7 @@ void CaptureWidget::deleteCurrentTool()
 
 void CaptureWidget::clearAllObjects()
 {
-    if (m_captureToolObjects.size() == 0) {
+    if (m_captureToolObjects.isEmpty()) {
         return;
     }
 

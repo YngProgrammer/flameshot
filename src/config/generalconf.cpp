@@ -303,10 +303,10 @@ void GeneralConf::initSaveLastRegion()
 void GeneralConf::initSaveLastObjects()
 {
     m_saveLastObjects =
-      new QCheckBox(tr("Restore last objects for GUI mode"), this);
+      new QCheckBox(tr("Restore drawing objects from previous screenshot"), this);
     m_saveLastObjects->setToolTip(
-      tr("Restore the drawing objects from the last screenshot in GUI mode. "
-         "Use Ctrl+Shift+C to clear all objects quickly."));
+      tr("Restore the drawing objects (arrows, rectangles, etc.) from the last "
+         "screenshot in GUI mode. Use Ctrl+Shift+C to clear all objects quickly."));
     m_scrollAreaLayout->addWidget(m_saveLastObjects);
 
     connect(m_saveLastObjects,
