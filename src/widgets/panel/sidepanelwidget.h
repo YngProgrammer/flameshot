@@ -36,11 +36,13 @@ signals:
     void hidePanel();
     void displayGridChanged(bool display);
     void gridSizeChanged(int size);
+    void circleCountChanged(int count);
 
 public slots:
     void onToolSizeChanged(int tool);
     void onColorChanged(const QColor& color);
     void startColorGrab();
+    void onCircleCountChanged(int count);
 
 private slots:
     void onColorGrabFinished();
@@ -68,4 +70,5 @@ private:
     int m_toolSize{};
     QCheckBox* m_gridCheck{ nullptr };
     QSpinBox* m_gridSizeSpin{ nullptr };
+    QSpinBox* m_circleCountSpin{ nullptr };
 };

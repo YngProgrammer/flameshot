@@ -66,6 +66,7 @@ public slots:
 signals:
     void colorChanged(const QColor& c);
     void toolSizeChanged(int size);
+    void circleCountChanged(int count);
 
 private slots:
     void undo();
@@ -82,6 +83,7 @@ private slots:
     void handleButtonLeftClick(CaptureToolButton* b);
     void handleButtonRightClick(CaptureToolButton* b);
     void setDrawColor(const QColor& c);
+    void onCircleCountChanged(int count);
     void onToolSizeChanged(int size);
     void onToolSizeSettled(int size);
     void updateActiveLayer(int layer);
@@ -142,6 +144,7 @@ private:
                                   const char* slot);
 
     void setToolSize(int size);
+    void updateCircleCount(int count);
 
     QRect extendedSelection() const;
     QRect extendedRect(const QRect& r) const;

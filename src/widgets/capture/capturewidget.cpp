@@ -819,7 +819,8 @@ bool CaptureWidget::startDrawObjectTool(const QPoint& pos)
         // TODO this is the wrong place to do this
 
         if (m_activeTool->type() == CaptureTool::TYPE_CIRCLECOUNT) {
-            m_activeTool->setCount(m_context.circleCount++);
+            m_activeTool->setCount(m_context.circleCount);
+            updateCircleCount(m_context.circleCount + 1);
         }
 
         return true;
@@ -1071,6 +1072,15 @@ void CaptureWidget::setToolSize(int size)
     }
 }
 
+void CaptureWidget::updateCircleCount(int count)
+{
+    int nextCount = count < 1 ? 1 : count;
+    if (m_context.circleCount != nextCount) {
+        m_context.circleCount = nextCount;
+    }
+    emit circleCountChanged(m_context.circleCount);
+}
+
 void CaptureWidget::keyPressEvent(QKeyEvent* e)
 {
     // If the key is a digit, change the tool size
@@ -1260,6 +1270,10 @@ void CaptureWidget::initPanel()
             &SidePanelWidget::toolSizeChanged,
             this,
             &CaptureWidget::onToolSizeChanged);
+    connect(m_sidePanel,
+            &SidePanelWidget::circleCountChanged,
+            this,
+            &CaptureWidget::onCircleCountChanged);
     connect(this,
             &CaptureWidget::colorChanged,
             m_sidePanel,
@@ -1268,6 +1282,10 @@ void CaptureWidget::initPanel()
             &CaptureWidget::toolSizeChanged,
             m_sidePanel,
             &SidePanelWidget::onToolSizeChanged);
+    connect(this,
+            &CaptureWidget::circleCountChanged,
+            m_sidePanel,
+            &SidePanelWidget::onCircleCountChanged);
     connect(m_sidePanel,
             &SidePanelWidget::togglePanel,
             m_panel,
@@ -1287,6 +1305,7 @@ void CaptureWidget::initPanel()
     // TODO replace with a CaptureWidget signal
     emit m_sidePanel->colorChanged(m_context.color);
     emit toolSizeChanged(m_context.toolSize);
+    emit circleCountChanged(m_context.circleCount);
     m_panel->pushWidget(m_sidePanel);
 
     // Fill undo/redo/history list widget
@@ -1486,6 +1505,11 @@ void CaptureWidget::handleToolSignal(CaptureTool::Request r)
     }
 }
 
+void CaptureWidget::onCircleCountChanged(int count)
+{
+    updateCircleCount(count);
+}
+
 /**
  * Was setDrawThickness
  * - Update config options
@@ -1612,7 +1636,7 @@ void CaptureWidget::removeToolObject(int index)
           paddedUpdateRect(m_captureToolObjects.at(index)->boundingRect()));
         if (currentToolType == CaptureTool::TYPE_CIRCLECOUNT) {
             int removedCircleCount = m_captureToolObjects.at(index)->count();
-            --m_context.circleCount;
+            updateCircleCount(m_context.circleCount - 1);
             // Decrement circle counter numbers starting from deleted circle
             for (int cnt = 0; cnt < m_captureToolObjects.size(); cnt++) {
                 auto toolItem = m_captureToolObjects.at(cnt);
@@ -1915,7 +1939,7 @@ void CaptureWidget::restoreCircleCountState()
             largest = toolItem->count();
         }
     }
-    m_context.circleCount = largest + 1;
+    updateCircleCount(largest + 1);
 }
 
 /**

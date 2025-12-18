@@ -14,6 +14,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QShortcut>
+#include <QSignalBlocker>
 #include <QSlider>
 #include <QVBoxLayout>
 #if defined(Q_OS_MACOS)
@@ -49,8 +50,20 @@ SidePanelWidget::SidePanelWidget(QPixmap* p, QWidget* parent)
     m_toolSizeSlider->setValue(m_toolSize);
     m_toolSizeSlider->setMinimumWidth(minSliderWidth);
 
+    auto* circleCountHBox = new QHBoxLayout();
+    auto* circleCountLabel = new QLabel(tr("Circle Counter: "));
+    m_circleCountSpin = new QSpinBox(this);
+    m_circleCountSpin->setRange(1, 9999);
+    m_circleCountSpin->setSingleStep(1);
+    m_circleCountSpin->setValue(1);
+    m_circleCountSpin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    circleCountHBox->addWidget(circleCountLabel);
+    circleCountHBox->addWidget(m_circleCountSpin);
+
     colorLayout->addLayout(toolSizeHBox, 0, 0);
     colorLayout->addWidget(m_toolSizeSlider, 1, 0);
+    colorLayout->addLayout(circleCountHBox, 2, 0);
 
     // Create Active Color
     auto* colorHBox = new QHBoxLayout();
@@ -61,7 +74,7 @@ SidePanelWidget::SidePanelWidget(QPixmap* p, QWidget* parent)
 
     colorHBox->addWidget(colorText);
     colorHBox->addWidget(m_colorLabel);
-    colorLayout->addLayout(colorHBox, 2, 0);
+    colorLayout->addLayout(colorHBox, 3, 0);
 
     m_layout->addLayout(colorLayout);
 
@@ -106,6 +119,10 @@ SidePanelWidget::SidePanelWidget(QPixmap* p, QWidget* parent)
             &SidePanelWidget::toolSizeChanged,
             this,
             &SidePanelWidget::onToolSizeChanged);
+    connect(m_circleCountSpin,
+            qOverload<int>(&QSpinBox::valueChanged),
+            this,
+            &SidePanelWidget::circleCountChanged);
     // color hex editor sigslots
     connect(m_colorHex, &QLineEdit::editingFinished, this, [=, this]() {
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
@@ -152,6 +169,13 @@ void SidePanelWidget::onToolSizeChanged(int t)
     m_toolSize = qBound(0, t, maxToolSize);
     m_toolSizeSlider->setValue(m_toolSize);
     m_toolSizeSpin->setValue(m_toolSize);
+}
+
+void SidePanelWidget::onCircleCountChanged(int count)
+{
+    int nextCount = count < 1 ? 1 : count;
+    QSignalBlocker blocker(m_circleCountSpin);
+    m_circleCountSpin->setValue(nextCount);
 }
 
 void SidePanelWidget::startColorGrab()
