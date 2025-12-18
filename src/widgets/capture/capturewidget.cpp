@@ -822,7 +822,7 @@ bool CaptureWidget::startDrawObjectTool(const QPoint& pos)
         m_activeTool->drawStart(m_context);
         // TODO this is the wrong place to do this
 
-        if (m_activeTool->type() == CaptureTool::TYPE_CIRCLECOUNT) {
+        if (m_activeTool && m_activeTool->type() == CaptureTool::TYPE_CIRCLECOUNT) {
             // Only auto-increment if not using custom count
             auto* circleTool = dynamic_cast<CircleCountTool*>(m_activeTool);
             if (circleTool && !circleTool->useCustomCount()) {

@@ -30,7 +30,7 @@ CircleCountConfig::CircleCountConfig(QWidget* parent)
             this,
             &CircleCountConfig::onCheckBoxToggled);
     connect(m_countSpinBox,
-            QOverload<int>::of(&QSpinBox::valueChanged),
+            static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this,
             &CircleCountConfig::onSpinBoxChanged);
 }

@@ -19,10 +19,7 @@ CircleCountTool::CircleCountTool(QObject* parent)
   , m_customCount(1)
 {}
 
-CircleCountTool::~CircleCountTool()
-{
-    // QPointer automatically handles cleanup, no manual deletion needed
-}
+CircleCountTool::~CircleCountTool() = default;
 
 QIcon CircleCountTool::icon(const QColor& background, bool inEditor) const
 {
