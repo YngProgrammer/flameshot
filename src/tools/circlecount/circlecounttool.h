@@ -13,6 +13,7 @@ class CircleCountTool : public AbstractTwoPointTool
     Q_OBJECT
 public:
     explicit CircleCountTool(QObject* parent = nullptr);
+    ~CircleCountTool() override;
 
     QIcon icon(const QColor& background, bool inEditor) const override;
     QString name() const override;

@@ -19,6 +19,13 @@ CircleCountTool::CircleCountTool(QObject* parent)
   , m_customCount(1)
 {}
 
+CircleCountTool::~CircleCountTool()
+{
+    if (!m_confW.isNull()) {
+        delete m_confW;
+    }
+}
+
 QIcon CircleCountTool::icon(const QColor& background, bool inEditor) const
 {
     Q_UNUSED(inEditor)

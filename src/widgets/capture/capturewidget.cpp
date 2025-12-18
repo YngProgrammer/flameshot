@@ -15,7 +15,6 @@
 #include "src/config/cacheutils.h"
 #include "src/core/flameshot.h"
 #include "src/core/qguiappcurrentscreen.h"
-#include "src/tools/circlecount/circlecounttool.h"
 #include "src/utils/screengrabber.h"
 #include "src/utils/screenshotsaver.h"
 #include "src/utils/systemnotification.h"
@@ -41,6 +40,10 @@
 #if !defined(DISABLE_UPDATE_CHECKER)
 #include "src/widgets/updatenotificationwidget.h"
 #endif
+
+// Include CircleCountTool for custom count checking
+// This is needed for dynamic_cast to check useCustomCount() in the drawing logic
+#include "src/tools/circlecount/circlecounttool.h"
 
 #define MOUSE_DISTANCE_TO_START_MOVING 3
 
