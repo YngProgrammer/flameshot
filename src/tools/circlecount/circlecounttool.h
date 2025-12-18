@@ -4,6 +4,9 @@
 #pragma once
 
 #include "src/tools/abstracttwopointtool.h"
+#include <QPointer>
+
+class CircleCountConfig;
 
 class CircleCountTool : public AbstractTwoPointTool
 {
@@ -24,6 +27,10 @@ public:
     void process(QPainter& painter, const QPixmap& pixmap) override;
     void paintMousePreview(QPainter& painter,
                            const CaptureContext& context) override;
+    
+    QWidget* configurationWidget() override;
+    
+    bool useCustomCount() const { return m_useCustomCount; }
 
 protected:
     CaptureTool::Type type() const override;
@@ -33,7 +40,14 @@ public slots:
     void drawStart(const CaptureContext& context) override;
     void pressed(CaptureContext& context) override;
 
+private slots:
+    void updateCustomCount(int count);
+    void updateUseCustomCount(bool useCustom);
+
 private:
     QString m_tempString;
     bool m_valid;
+    bool m_useCustomCount;
+    int m_customCount;
+    QPointer<CircleCountConfig> m_confW;
 };

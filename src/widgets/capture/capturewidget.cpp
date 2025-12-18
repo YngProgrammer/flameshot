@@ -15,6 +15,7 @@
 #include "src/config/cacheutils.h"
 #include "src/core/flameshot.h"
 #include "src/core/qguiappcurrentscreen.h"
+#include "src/tools/circlecount/circlecounttool.h"
 #include "src/utils/screengrabber.h"
 #include "src/utils/screenshotsaver.h"
 #include "src/utils/systemnotification.h"
@@ -819,7 +820,11 @@ bool CaptureWidget::startDrawObjectTool(const QPoint& pos)
         // TODO this is the wrong place to do this
 
         if (m_activeTool->type() == CaptureTool::TYPE_CIRCLECOUNT) {
-            m_activeTool->setCount(m_context.circleCount++);
+            // Only auto-increment if not using custom count
+            auto* circleTool = dynamic_cast<CircleCountTool*>(m_activeTool);
+            if (circleTool && !circleTool->useCustomCount()) {
+                m_activeTool->setCount(m_context.circleCount++);
+            }
         }
 
         return true;
